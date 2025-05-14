@@ -16,7 +16,6 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
 	title: "KMW Business Management System",
 	description: "Business management system for KMW GmbH",
-	generator: "v0.dev",
 };
 
 export default async function RootLayout({
