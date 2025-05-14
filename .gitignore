@@ -27,3 +27,6 @@ yarn-error.log*
 next-env.d.ts
 
 info.txt"node_modules\n.env\n*.log" 
+node_modules
+.env
+*.log
