@@ -1,0 +1,48 @@
+enum OfferStatus {
+  OPEN
+  ACCEPTED
+  REJECTED
+}
+
+model Offer {
+  id            String      @id @default(uuid())
+  subject       String // Betreff
+  date          DateTime
+  serviceStart  DateTime?   @map("service_start") // Leistungszeitraum
+  serviceEnd    DateTime?   @map("service_end")
+  reference     String?     @map("reference") // Referenz
+  customer      Customer    @relation(fields: [customerId], references: [id])
+  customerId    String      @map("customer_id")
+  items         OfferItem[]
+  subtotal      Float
+  tax           Float
+  taxRate       Float       @map("tax_rate")
+  total         Float
+  processor     String
+  bankDetails   BankDetails @relation(fields: [bankDetailsId], references: [id])
+  bankDetailsId String      @map("bank_details_id")
+  status        OfferStatus @default(OPEN)
+  statusDate    DateTime    @default(now()) @map("status_date")
+  statusNote    String?     @map("status_note")
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+
+  @@index([customerId], name: "idx_offer_customer_id")
+  @@map("offers")
+}
+
+model OfferItem {
+  id        String   @id @default(uuid())
+  offer     Offer    @relation(fields: [offerId], references: [id])
+  offerId   String   @map("offer_id")
+  product   String
+  artNr     String
+  quantity  Int
+  price     Float
+  total     Float
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([offerId], name: "idx_offer_item_offer_id")
+  @@map("offer_items")
+}

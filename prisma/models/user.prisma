@@ -1,0 +1,143 @@
+enum EmployeeStatus {
+  active
+  inactive
+  on_leave
+}
+
+enum Status {
+  active
+  inactive
+  on_leave
+}
+
+model User {
+  id                String    @id @default(uuid())
+  name              String
+  username          String    @unique
+  email             String    @unique
+  password          String
+  passwordChangedAt DateTime? @map("password_changed_at")
+  passwordExpiredAt DateTime? @map("password_expired_at")
+  avatar            String?
+  active            Boolean   @default(true) @map("is_active")
+  lastLogin         DateTime? @map("last_login")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+  role              Role      @relation(fields: [roleId], references: [id], onDelete: Restrict)
+  roleId            String    @map("role_id")
+  employee          Employee?
+  logs              UserLog[]
+
+  @@index([email], name: "idx_user_email")
+  @@index([roleId], name: "idx_user_role")
+}
+
+model Role {
+  id              String       @id @default(uuid()) @map("id")
+  key             String       @unique @map("role_key")
+  users           User[]
+  rolePermissions Permission[]
+}
+
+model Permission {
+  id              String    @id @default(uuid()) @map("id")
+  key             String    @unique @map("perm_key")
+  rolePermissions Role[]
+  Employee        Employee? @relation(fields: [employeeId], references: [id])
+  employeeId      String?
+}
+
+model Employee {
+  id           String          @id @default(uuid())
+  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String          @unique @map("user_id")
+  zip          String
+  city         String
+  country      String          @default("at")
+  street       String
+  phone        String
+  department   Department?     @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  departmentId String?         @map("department_id")
+  position     Position?       @relation(fields: [positionId], references: [id], onDelete: Cascade)
+  positionId   String?         @map("position_id")
+  status       EmployeeStatus? @default(active)
+  joinDate     DateTime?       @default(now()) @map("join_date")
+  notes        String?
+  skills       Skill[]
+  vacationDays Int?            @default(0) @map("vacation_days")
+  team         String?
+  documents    Document[]
+  permissions  Permission[]
+  createdAt    DateTime        @default(now()) @map("created_at")
+  updatedAt    DateTime        @updatedAt @map("updated_at")
+
+  @@index([status], name: "idx_emp_status")
+  @@index([departmentId], name: "idx_emp_dep")
+}
+
+model Document {
+  id         String   @id @default(uuid())
+  name       String
+  path       String
+  employee   Employee @relation(fields: [employeeId], references: [id])
+  employeeId String
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@index([name], name: "idx_doc_name")
+}
+
+model Skill {
+  id        String     @id @default(uuid())
+  name      String
+  level     Int
+  employees Employee[]
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
+
+  @@index([name], name: "idx_skill_name")
+}
+
+model Department {
+  id        String     @id @default(uuid())
+  name      String
+  employees Employee[]
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
+
+  @@index([name], name: "idx_dep_name")
+}
+
+model Position {
+  id        String     @id @default(uuid())
+  name      String
+  employees Employee[]
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
+
+  @@index([name], name: "idx_pos_name")
+}
+
+model UserLog {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String   @map("user_id")
+  action    String
+  ipAddress String?  @map("ip_address")
+  timestamp DateTime @default(now())
+
+  @@index([userId], name: "idx_log_user")
+  @@index([timestamp], name: "idx_log_time")
+  @@map("user_logs")
+}
+
+model PasswordPolicy {
+  id               Int      @id @default(1)
+  minLength        Int      @default(8) @map("min_length")
+  requireUppercase Boolean  @default(true) @map("require_uppercase")
+  requireNumber    Boolean  @default(true) @map("require_digits")
+  requireSymbol    Boolean  @default(true) @map("require_special_chars")
+  expiryInDays     Int      @default(90) @map("expiry_in_days")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+}

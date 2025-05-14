@@ -1,0 +1,52 @@
+enum BackupType {
+  manual
+  automatic
+}
+
+enum BackupStatus {
+  completed
+  in_progress
+  failed
+}
+
+enum StorageLocation {
+  local
+  cloud
+}
+
+enum Frequency {
+  daily
+  weekly
+  monthly
+}
+
+model BackupSettings {
+  id               String          @id @default(uuid())
+  automaticBackups Boolean         @default(true) @map("automatic_backups")
+  frequency        Frequency       @default(daily)
+  retention        Int             @default(30)
+  includedData     Json            @map("included_data")
+  storageLocation  StorageLocation @default(cloud)
+  cloudProvider    String?         @map("cloud_provider")
+  lastBackup       DateTime?       @map("last_backup")
+  nextBackup       DateTime?       @map("next_backup")
+  Backup           Backup[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([automaticBackups, frequency], name: "idx_backup_settings")
+}
+
+model Backup {
+  id         String          @id
+  name       String
+  type       BackupType
+  status     BackupStatus    @default(completed)
+  location   StorageLocation
+  size       String
+  settings   BackupSettings? @relation(fields: [settingsId], references: [id], onDelete: SetNull)
+  settingsId String?         @map("settings_id")
+  createdAt  DateTime        @default(now()) @map("created_at")
+  updatedAt  DateTime        @updatedAt @map("updated_at")
+}

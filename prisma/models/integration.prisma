@@ -1,0 +1,96 @@
+enum IntegrationType {
+  payment
+  shipping
+  accounting
+  crm
+  email
+  storage
+  analytics
+  other
+}
+
+enum IntegrationStatus {
+  active
+  inactive
+  error
+  pending
+  configured
+}
+
+model ApiIntegration {
+  id            String            @id @default(uuid())
+  name          String
+  description   String?
+  baseUrl       String            @map("base_url")
+  type          IntegrationType
+  status        IntegrationStatus @default(inactive)
+  enabled       Boolean           @default(false)
+  tags          String[]
+  documentation String?
+  version       String?
+  createdAt     DateTime          @default(now()) @map("created_at")
+  updatedAt     DateTime          @updatedAt
+  credentials   ApiCredential[]
+  endpoints     ApiEndpoint[]
+
+  @@index([type, status], name: "idx_integration_type_status")
+}
+
+model ApiCredential {
+  id            String         @id @default(uuid())
+  integration   ApiIntegration @relation(fields: [integrationId], references: [id], onDelete: Cascade)
+  integrationId String         @map("integration_id")
+  type          String
+  data          Json
+  expiresAt     DateTime?
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+}
+
+model ApiEndpoint {
+  id                String         @id @default(uuid())
+  integration       ApiIntegration @relation(fields: [integrationId], references: [id], onDelete: Cascade)
+  integrationId     String         @map("integration_id")
+  name              String
+  description       String?
+  path              String
+  method            String
+  contentType       String         @map("content_type")
+  customContentType String?        @map("custom_content_type")
+  headers           ApiHeader[]
+  parameters        ApiParameter[]
+  requestBody       String?        @map("request_body")
+  responseExample   String?        @map("response_example")
+  lastTested        DateTime?      @map("last_tested")
+  testResult        Json?          @map("test_result")
+  createdAt         DateTime       @default(now()) @map("created_at")
+  updatedAt         DateTime       @updatedAt @map("updated_at")
+
+  @@index([integrationId, path, method], name: "idx_endpoint_integration_path_method")
+}
+
+model ApiHeader {
+  id          String      @id @default(uuid())
+  endpoint    ApiEndpoint @relation(fields: [endpointId], references: [id], onDelete: Cascade)
+  endpointId  String      @map("endpoint_id")
+  key         String
+  value       String
+  description String?
+  enabled     Boolean
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+}
+
+model ApiParameter {
+  id          String      @id @default(uuid())
+  endpoint    ApiEndpoint @relation(fields: [endpointId], references: [id], onDelete: Cascade)
+  endpointId  String      @map("endpoint_id")
+  key         String
+  value       String
+  description String?
+  required    Boolean
+  type        String
+  enabled     Boolean
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+}

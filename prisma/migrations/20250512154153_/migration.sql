@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "companies" ALTER COLUMN "legal_form" DROP NOT NULL,
+ALTER COLUMN "number" DROP NOT NULL,
+ALTER COLUMN "country" DROP NOT NULL;

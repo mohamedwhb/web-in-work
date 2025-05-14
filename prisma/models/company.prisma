@@ -1,0 +1,32 @@
+model Company {
+  id                 String   @id @default(uuid())
+  name               String
+  logo               String?
+  legalForm          String?  @map("legal_form")
+  registrationNumber String?  @map("registration_number")
+  vatId              String?  @map("vat_id")
+  taxId              String?  @map("tax_id")
+  email              String
+  phone              String
+  website            String?
+  fax                String?
+  street             String
+  number             String?
+  zip                String
+  city               String
+  country            String?  @default("Österreich")
+  foundingYear       String?  @map("founding_year")
+  employees          String?
+  industry           String?
+  notes              String?
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  bankDetails   BankDetails @relation(fields: [bankDetailsId], references: [id])
+  bankDetailsId String      @unique
+
+  @@index([name], name: "idx_company_name")
+  @@index([vatId], name: "idx_company_vat_id")
+  @@map("companies")
+}

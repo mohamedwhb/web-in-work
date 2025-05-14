@@ -1,0 +1,39 @@
+model LegalText {
+  id                            String   @id @default(uuid())
+  invoiceDisclaimer             String   @map("invoice_disclaimer")
+  invoiceDisclaimerEnabled      Boolean  @map("invoice_disclaimer_enabled")
+  offerDisclaimer               String   @map("offer_disclaimer")
+  offerDisclaimerEnabled        Boolean  @map("offer_disclaimer_enabled")
+  deliveryNoteDisclaimer        String   @map("delivery_note_disclaimer")
+  deliveryNoteDisclaimerEnabled Boolean  @map("delivery_note_disclaimer_enabled")
+  termsAndConditions            String   @map("terms_and_conditions")
+  termsAndConditionsTitle       String   @map("terms_and_conditions_title")
+  termsAndConditionsEnabled     Boolean  @map("terms_and_conditions_enabled")
+  privacyPolicy                 String   @map("privacy_policy")
+  privacyPolicyTitle            String   @map("privacy_policy_title")
+  privacyPolicyEnabled          Boolean  @map("privacy_policy_enabled")
+  cancellationPolicy            String   @map("cancellation_policy")
+  cancellationPolicyTitle       String   @map("cancellation_policy_title")
+  cancellationPolicyEnabled     Boolean  @map("cancellation_policy_enabled")
+  legalNotice                   String   @map("legal_notice")
+  legalNoticeTitle              String   @map("legal_notice_title")
+  legalNoticeEnabled            Boolean  @map("legal_notice_enabled")
+  updatedAt                     DateTime @updatedAt @map("updated_at")
+  createdAt                     DateTime @default(now()) @map("created_at")
+}
+
+model DocumentTemplate {
+  id            String   @id @default(uuid())
+  name          String
+  description   String?
+  preview       String
+  colors        Json
+  fonts         Json
+  layout        String
+  showLogo      Boolean  @map("show_logo")
+  showSignature Boolean  @map("show_signature")
+  showFooter    Boolean  @map("show_footer")
+  showWatermark Boolean  @map("show_watermark")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+}

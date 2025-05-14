@@ -1,0 +1,29 @@
+model DashboardSetting {
+  id              String   @id @default(uuid())
+  refreshInterval Int      @map("refresh_interval")
+  theme           String
+  layout          String
+  compactView     Boolean  @map("compact_view")
+  autoRefresh     Boolean  @map("auto_refresh")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+}
+
+model WidgetConfig {
+  id        String   @id @default(uuid())
+  position  Int
+  config    Json
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+}
+
+model WidgetData {
+  id              String   @id @default(uuid())
+  widgetId        String   @map("widget_id")
+  dateRange       String?  @map("date_range")
+  customDateRange Json?    @map("custom_date_range")
+  data            Json
+  lastUpdated     DateTime @default(now()) @map("last_updated")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+}

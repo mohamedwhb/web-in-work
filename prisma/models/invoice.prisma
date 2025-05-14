@@ -1,0 +1,40 @@
+enum PaymentStatus {
+  partial
+  paid
+  overdue
+  cancelled
+}
+
+model Invoice {
+  id               String            @id @default(uuid())
+  date             DateTime
+  customer         Customer          @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  customerId       String            @map("customer_id")
+  notes            String?
+  paymentTerms     String            @map("payment_terms")
+  paymentStatus    PaymentStatus     @map("payment_status")
+  paymentMethod    PaymentMethodType @map("payment_method")
+  paymentDueDate   DateTime          @map("payment_due_date")
+  paymentDate      DateTime?         @map("payment_date")
+  paymentAmount    Decimal           @db.Decimal(13, 2)
+  paymentReference String?
+  offerReference   String?
+  items            InvoiceItem[]
+  createdAt        DateTime          @default(now()) @map("created_at")
+  updatedAt        DateTime          @updatedAt @map("updated_at")
+
+  @@index([date, paymentStatus], name: "idx_invoice_date_status")
+}
+
+model InvoiceItem {
+  id          String   @id @default(uuid())
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  invoiceId   String   @map("invoice_id")
+  name        String
+  description String?
+  quantity    Int
+  price       Decimal  @db.Decimal(10, 2)
+  unit        String
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+}

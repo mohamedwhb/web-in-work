@@ -1,0 +1,40 @@
+enum CustomerType {
+  BUSINESS
+  INDIVIDUAL
+}
+
+enum CustomerStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model Customer {
+  id             String         @id @default(uuid())
+  name           String
+  street         String?
+  city           String?
+  zip            String?
+  country        String?        @default("Österreich")
+  customerNumber String?        @unique @map("customer_number")
+  vatId          String?        @unique @map("vat_id")
+  taxId          String?        @map("tax_id")
+  email          String?        @unique @map("email")
+  phone          String?        @map("phone")
+  type           CustomerType   @default(BUSINESS)
+  status         CustomerStatus @default(ACTIVE)
+  contactPerson  String?        @map("contact_person")
+  lastOrder      DateTime?      @map("last_order")
+  totalOrders    Int            @default(0) @map("total_orders")
+  totalRevenue   Decimal?       @default("0.00") @map("total_revenue") @db.Decimal(13, 2)
+  notes          String?        @map("notes")
+  updatedAt      DateTime       @updatedAt @map("updated_at")
+  licenses       License[]      @relation("CustomerLicenses")
+  Invoice        Invoice[]
+
+  createdAt    DateTime       @default(now()) @map("created_at")
+  Offer        Offer[]
+  DeliveryNote DeliveryNote[]
+
+  @@index([name], name: "idx_customer_name")
+  @@map("customers")
+}

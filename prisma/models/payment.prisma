@@ -1,0 +1,27 @@
+enum PaymentMethodType {
+  bank_transfer
+  cash
+  credit_card
+  paypal
+  direct_debit
+  invoice
+  custom
+}
+
+model PaymentMethod {
+  id             String            @id @default(uuid())
+  type           PaymentMethodType
+  name           String
+  description    String?
+  enabled        Boolean           @default(true)
+  isDefault      Boolean           @default(false) @map("is_default")
+  processingTime String            @map("processing_time")
+  fee            Json?
+  customFields   Json              @map("custom_fields")
+  order          Int
+  icon           String?
+  createdAt      DateTime          @default(now()) @map("created_at")
+  updatedAt      DateTime          @updatedAt @map("updated_at")
+
+  @@index([type, order], name: "idx_paymentmethod_type_order")
+}
