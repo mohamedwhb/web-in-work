@@ -19,7 +19,7 @@ import { secureFetch } from "@/lib/secure-fetch";
 import { AlertCircle, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function AnmeldungPage() {
 	const [username, setUsername] = useState("");
@@ -28,6 +28,20 @@ export default function AnmeldungPage() {
 	const [isLoading, setIsLoading] = useState(false);
 	const router = useRouter();
 	const { login } = useAuth();
+
+	// Get CSRF token on component mount
+	useEffect(() => {
+		const getCsrfToken = async () => {
+			try {
+				await fetch("/api/csrf", {
+					credentials: "include",
+				});
+			} catch (err) {
+				console.error("Failed to get CSRF token:", err);
+			}
+		};
+		getCsrfToken();
+	}, []);
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -44,13 +58,14 @@ export default function AnmeldungPage() {
 			const data = await response.json();
 
 			if (!response.ok) {
-				throw new Error(data.message || "Anmeldung fehlgeschlagen");
+				throw new Error(data.message || data.error || "Anmeldung fehlgeschlagen");
 			}
 
 			// Erfolgreiche Anmeldung
 			login(data.user);
 			router.push("/dashboard");
 		} catch (err) {
+			console.error("Login error:", err);
 			setError(
 				err instanceof Error
 					? err.message
@@ -62,7 +77,7 @@ export default function AnmeldungPage() {
 	};
 
 	return (
-		<div>
+		<div className="flex min-h-screen items-center justify-center">
 			<Card className="w-full max-w-md">
 				<CardHeader className="space-y-1 text-center">
 					<CardTitle className="text-2xl font-bold">
