@@ -1,13 +1,3 @@
-enum PaymentMethodType {
-  bank_transfer
-  cash
-  credit_card
-  paypal
-  direct_debit
-  invoice
-  custom
-}
-
 model PaymentMethod {
   id             String            @id @default(uuid())
   type           PaymentMethodType
@@ -23,5 +13,15 @@ model PaymentMethod {
   createdAt      DateTime          @default(now()) @map("created_at")
   updatedAt      DateTime          @updatedAt @map("updated_at")
 
-  @@index([type, order], name: "idx_paymentmethod_type_order")
+  @@index([type, order], map: "idx_paymentmethod_type_order")
+}
+
+enum PaymentMethodType {
+  bank_transfer
+  cash
+  credit_card
+  paypal
+  direct_debit
+  invoice
+  custom
 }

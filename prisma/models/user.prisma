@@ -1,15 +1,3 @@
-enum EmployeeStatus {
-  active
-  inactive
-  on_leave
-}
-
-enum Status {
-  active
-  inactive
-  on_leave
-}
-
 model User {
   id                String    @id @default(uuid())
   name              String
@@ -23,111 +11,111 @@ model User {
   lastLogin         DateTime? @map("last_login")
   createdAt         DateTime  @default(now()) @map("created_at")
   updatedAt         DateTime  @updatedAt @map("updated_at")
-  role              Role      @relation(fields: [roleId], references: [id], onDelete: Restrict)
   roleId            String    @map("role_id")
   employee          Employee?
+  role              Role      @relation(fields: [roleId], references: [id])
   logs              UserLog[]
 
-  @@index([email], name: "idx_user_email")
-  @@index([roleId], name: "idx_user_role")
+  @@index([email], map: "idx_user_email")
+  @@index([roleId], map: "idx_user_role")
 }
 
 model Role {
   id              String       @id @default(uuid()) @map("id")
   key             String       @unique @map("role_key")
   users           User[]
-  rolePermissions Permission[]
+  rolePermissions Permission[] @relation("PermissionToRole")
 }
 
 model Permission {
   id              String    @id @default(uuid()) @map("id")
   key             String    @unique @map("perm_key")
-  rolePermissions Role[]
-  Employee        Employee? @relation(fields: [employeeId], references: [id])
   employeeId      String?
+  Employee        Employee? @relation(fields: [employeeId], references: [id])
+  rolePermissions Role[]    @relation("PermissionToRole")
 }
 
 model Employee {
   id           String          @id @default(uuid())
-  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId       String          @unique @map("user_id")
   zip          String
   city         String
   country      String          @default("at")
   street       String
   phone        String
-  department   Department?     @relation(fields: [departmentId], references: [id], onDelete: Cascade)
   departmentId String?         @map("department_id")
-  position     Position?       @relation(fields: [positionId], references: [id], onDelete: Cascade)
   positionId   String?         @map("position_id")
   status       EmployeeStatus? @default(active)
   joinDate     DateTime?       @default(now()) @map("join_date")
   notes        String?
-  skills       Skill[]
   vacationDays Int?            @default(0) @map("vacation_days")
   team         String?
-  documents    Document[]
-  permissions  Permission[]
   createdAt    DateTime        @default(now()) @map("created_at")
   updatedAt    DateTime        @updatedAt @map("updated_at")
+  documents    Document[]
+  department   Department?     @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  position     Position?       @relation(fields: [positionId], references: [id], onDelete: Cascade)
+  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  permissions  Permission[]
+  skills       Skill[]         @relation("EmployeeToSkill")
 
-  @@index([status], name: "idx_emp_status")
-  @@index([departmentId], name: "idx_emp_dep")
+  @@index([status], map: "idx_emp_status")
+  @@index([departmentId], map: "idx_emp_dep")
 }
 
 model Document {
   id         String   @id @default(uuid())
   name       String
   path       String
-  employee   Employee @relation(fields: [employeeId], references: [id])
   employeeId String
   createdAt  DateTime @default(now()) @map("created_at")
   updatedAt  DateTime @updatedAt @map("updated_at")
+  employee   Employee @relation(fields: [employeeId], references: [id])
 
-  @@index([name], name: "idx_doc_name")
+  @@index([name], map: "idx_doc_name")
 }
 
 model Skill {
   id        String     @id @default(uuid())
   name      String
   level     Int
-  employees Employee[]
   createdAt DateTime   @default(now()) @map("created_at")
   updatedAt DateTime   @updatedAt @map("updated_at")
+  employees Employee[] @relation("EmployeeToSkill")
 
-  @@index([name], name: "idx_skill_name")
+  @@index([name], map: "idx_skill_name")
 }
 
 model Department {
   id        String     @id @default(uuid())
   name      String
-  employees Employee[]
   createdAt DateTime   @default(now()) @map("created_at")
   updatedAt DateTime   @updatedAt @map("updated_at")
+  employees Employee[]
 
-  @@index([name], name: "idx_dep_name")
+  @@index([name], map: "idx_dep_name")
 }
 
 model Position {
   id        String     @id @default(uuid())
   name      String
-  employees Employee[]
   createdAt DateTime   @default(now()) @map("created_at")
   updatedAt DateTime   @updatedAt @map("updated_at")
+  employees Employee[]
 
-  @@index([name], name: "idx_pos_name")
+  @@index([name], map: "idx_pos_name")
 }
 
 model UserLog {
   id        String   @id @default(uuid())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String   @map("user_id")
   action    String
   ipAddress String?  @map("ip_address")
   timestamp DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([userId], name: "idx_log_user")
-  @@index([timestamp], name: "idx_log_time")
+  @@index([userId], map: "idx_log_user")
+  @@index([timestamp], map: "idx_log_time")
   @@map("user_logs")
 }
 
@@ -140,4 +128,16 @@ model PasswordPolicy {
   expiryInDays     Int      @default(90) @map("expiry_in_days")
   createdAt        DateTime @default(now()) @map("created_at")
   updatedAt        DateTime @updatedAt @map("updated_at")
+}
+
+enum EmployeeStatus {
+  active
+  inactive
+  on_leave
+}
+
+enum Status {
+  active
+  inactive
+  on_leave
 }

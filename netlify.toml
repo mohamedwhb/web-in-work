@@ -7,3 +7,9 @@
   NODE_VERSION = "20"
   NPM_FLAGS = "--version"
   PNPM_VERSION = "10.8.0"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[functions]
+  node_bundler = "esbuild"

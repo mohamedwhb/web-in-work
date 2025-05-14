@@ -8,16 +8,16 @@ model Product {
   stock       Int?              @default(0)
   minStock    Int?              @default(0)
   taxRate     Int?              @default(0)
-  group       Group?            @relation(fields: [groupId], references: [id], onDelete: Cascade)
   groupId     String?
   artNr       String?
-  updates     InventoryUpdate[]
-  category    Category          @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   categoryId  String
   createdAt   DateTime          @default(now()) @map("created_at")
   updatedAt   DateTime          @updatedAt @map("updated_at")
+  updates     InventoryUpdate[]
+  category    Category          @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  group       Group?            @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
-  @@index([name], name: "idx_product_name")
+  @@index([name], map: "idx_product_name")
 }
 
 model Group {
@@ -42,9 +42,9 @@ model Category {
 
 model InventoryUpdate {
   id        String   @id @default(uuid())
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId String   @map("product_id")
   quantity  Int
   updatedAt DateTime @default(now()) @map("updated_at")
   createdAt DateTime @default(now()) @map("created_at")
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 }

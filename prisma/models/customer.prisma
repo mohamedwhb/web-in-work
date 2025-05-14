@@ -1,13 +1,3 @@
-enum CustomerType {
-  BUSINESS
-  INDIVIDUAL
-}
-
-enum CustomerStatus {
-  ACTIVE
-  INACTIVE
-}
-
 model Customer {
   id             String         @id @default(uuid())
   name           String
@@ -25,16 +15,25 @@ model Customer {
   contactPerson  String?        @map("contact_person")
   lastOrder      DateTime?      @map("last_order")
   totalOrders    Int            @default(0) @map("total_orders")
-  totalRevenue   Decimal?       @default("0.00") @map("total_revenue") @db.Decimal(13, 2)
+  totalRevenue   Decimal?       @default(0.00) @map("total_revenue") @db.Decimal(13, 2)
   notes          String?        @map("notes")
   updatedAt      DateTime       @updatedAt @map("updated_at")
-  licenses       License[]      @relation("CustomerLicenses")
+  createdAt      DateTime       @default(now()) @map("created_at")
   Invoice        Invoice[]
+  licenses       License[]      @relation("CustomerLicenses")
+  DeliveryNote   DeliveryNote[]
+  Offer          Offer[]
 
-  createdAt    DateTime       @default(now()) @map("created_at")
-  Offer        Offer[]
-  DeliveryNote DeliveryNote[]
-
-  @@index([name], name: "idx_customer_name")
+  @@index([name], map: "idx_customer_name")
   @@map("customers")
+}
+
+enum CustomerType {
+  BUSINESS
+  INDIVIDUAL
+}
+
+enum CustomerStatus {
+  ACTIVE
+  INACTIVE
 }
