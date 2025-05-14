@@ -10,7 +10,7 @@
 		"postinstall": "prisma generate"
 	},
 	"prisma": {
-		"schema": "./prisma",
+		"schema": "./prisma"
 	},
 	"dependencies": {
 		"@dnd-kit/core": "latest",
@@ -60,7 +60,7 @@
 		"clsx": "^2.1.1",
 		"cmdk": "latest",
 		"csrf": "^3.1.0",
-		"date-fns": "^4.1.0",
+		"date-fns": "^3.0.0",
 		"embla-carousel-react": "8.5.1",
 		"input-otp": "1.4.1",
 		"jsonwebtoken": "^9.0.2",
@@ -72,7 +72,7 @@
 		"nodemailer": "latest",
 		"qrcode": "latest",
 		"react": "^19",
-		"react-day-picker": "^8.10.1",
+		"react-day-picker": "^9.6.7",
 		"react-dom": "^19",
 		"react-hook-form": "latest",
 		"react-intersection-observer": "latest",
@@ -83,7 +83,7 @@
 		"tailwind-merge": "^2.5.5",
 		"tailwindcss-animate": "^1.0.7",
 		"uploadthing": "^7.7.0",
-		"vaul": "^0.9.6",
+		"vaul": "^1.1.2",
 		"ws": "^8.18.2",
 		"zod": "latest"
 	},
