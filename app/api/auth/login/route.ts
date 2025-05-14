@@ -24,6 +24,8 @@ export async function POST(request: Request) {
 		}
 
 		const { username, password } = await request.json();
+		console.log("Login attempt for username:", username);
+
 		if (!username || !password) {
 			return NextResponse.json(
 				{ message: "Ungültige Anmeldeinformationen" },
@@ -33,6 +35,7 @@ export async function POST(request: Request) {
 
 		const isValidLogin = loginUserSchema.safeParse({ username, password });
 		if (!isValidLogin.success) {
+			console.log("Invalid login schema:", isValidLogin.error);
 			return NextResponse.json(
 				{ message: "Ungültige Anmeldeinformationen" },
 				{ status: 401 },
@@ -54,6 +57,8 @@ export async function POST(request: Request) {
 				},
 			},
 		});
+		console.log("Found user:", user ? "Yes" : "No");
+
 		if (!user) {
 			return NextResponse.json(
 				{ message: "Ungültige Anmeldeinformationen" },
@@ -79,6 +84,8 @@ export async function POST(request: Request) {
 		}
 
 		const isValidPassword = await bcrypt.compare(password, user.password);
+		console.log("Password valid:", isValidPassword);
+
 		if (!isValidPassword) {
 			return NextResponse.json(
 				{ message: "Ungültige Anmeldeinformationen" },
@@ -130,9 +137,9 @@ export async function POST(request: Request) {
 
 		return res;
 	} catch (error) {
-		console.error(error);
+		console.error("Login error details:", error);
 		return NextResponse.json(
-			{ message: "Internal server error" },
+			{ message: "Internal server error", error: error instanceof Error ? error.message : "Unknown error" },
 			{ status: 500 },
 		);
 	}
